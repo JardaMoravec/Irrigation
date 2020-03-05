@@ -30,14 +30,21 @@ class IREngine:
 
     def start(self):
         # turn on transformer
-        self.logger.log("Trafo start")
         self.switches['t'].start()
 
         time.sleep(1)
 
         # turn on main switch
-        self.logger.log("Hlavní ventil start")
         self.switches['m'].start()
+
+    def stop(self):
+        # turn off main switch
+        self.switches['m'].stop()
+
+        time.sleep(1)
+
+        # turn off transformer
+        self.switches['t'].stop()
 
     def clean_filters(self):
         # main is on?
@@ -48,7 +55,7 @@ class IREngine:
         self.logger.log("Clean filter 1")
         self.switches['f1'].start()
         time.sleep(self.filter_runtime)
-        self.switches['f2'].stop()
+        self.switches['f1'].stop()
 
         time.sleep(5)
 
@@ -59,17 +66,6 @@ class IREngine:
         self.switches['f2'].stop()
 
         time.sleep(2)
-
-    def stop(self):
-        # turn off main switch
-        self.logger.log("Hlavní ventil stop")
-        self.switches['m'].stop()
-
-        time.sleep(1)
-
-        # turn off transformer
-        self.logger.log("Trafo stop")
-        self.switches['f'].stop()
 
     def turn_on_switch(self, key):
         # main is on?
@@ -82,7 +78,9 @@ class IREngine:
             return
 
         try:
-            # turn off all other switches
+            # turn off all other switches and filters
+            self.switches['f1'].stop()
+            self.switches['f2'].stop()
             for i in range(1, 5):
                 if key != i:
                     self.switches[i].stop()

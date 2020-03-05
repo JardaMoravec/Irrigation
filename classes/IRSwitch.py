@@ -10,6 +10,7 @@ class IRSwitch:
         self.name = name
         self.pin = pin
 
+        gpio.cleanup(pin)
         gpio.setmode(gpio.BCM)
         gpio.setup(pin, gpio.OUT)
 
@@ -21,23 +22,23 @@ class IRSwitch:
         if self.is_on is False:
             self.is_on = True
             gpio.output(self.pin, gpio.HIGH)
-            self.logger.log("Start " + self.name + "\n")
+            self.logger.log("Start " + self.name)
 
     def stop(self):
         if self.is_on is True:
             self.is_on = False
             gpio.output(self.pin, gpio.LOW)
-            self.logger.log("Stop " + self.name + "\n")
+            self.logger.log("Stop " + self.name)
 
     def start_and_stop(self, seconds: int):
         if self.is_on is False:
             gpio.output(self.pin, gpio.HIGH)
-            self.logger.log("Start " + self.name + "\n")
+            self.logger.log("Start " + self.name)
 
             time.sleep(seconds)
 
             gpio.output(self.pin, gpio.LOW)
-            self.logger.log("Stop " + self.name + "\n")
+            self.logger.log("Stop " + self.name)
 
     def clean(self):
         gpio.cleanup(self.pin)   

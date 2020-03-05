@@ -1,9 +1,11 @@
 import datetime
 from classes.IRSwitch import IRSwitch
+from classes.IREngine import IREngine
 
 
 class IRPlanner:
-    def __init__(self):
+    def __init__(self, engine: IREngine):
+        self.engine = engine
         self.run_list = []
         self.load_settings()
 
@@ -27,7 +29,7 @@ class IRPlanner:
                     self.run_list.append(item)
 
                 except ValueError as e:
-                    print(e)
+                    self.engine.logger.log("Špatný konfigurák.")
         f.close()
 
     def is_it_time(self):
