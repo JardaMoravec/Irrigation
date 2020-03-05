@@ -1,33 +1,43 @@
 import RPi.GPIO as gpio
 import time
-import datetime
+
+from classes.IRLogger import IRLogger
 
 
 class IRSwitch:
 
-    def __init__(self, name: str, pin: int, logfile: str):
+    def __init__(self, name: str, pin: int, logger: IRLogger):
         self.name = name
         self.pin = pin
 
         gpio.setmode(gpio.BCM)
         gpio.setup(pin, gpio.OUT)
 
-        self.log = open(logfile, 'a')        
+        self.logger = logger
+
+        self.is_on = False
 
     def start(self):
-        gpio.output(self.pin, gpio.HIGH)
-        self.log.write(str(datetime.datetime.now()) + " start " + self.name + "\n")
+        if self.is_on is False:
+            self.is_on = True
+            gpio.output(self.pin, gpio.HIGH)
+            self.logger.log("Start " + self.name + "\n")
 
     def stop(self):
-        gpio.output(self.pin, gpio.LOW)
-        self.log.write(str(datetime.datetime.now()) + " stop " + self.name + "\n")
+        if self.is_on is True:
+            self.is_on = False
+            gpio.output(self.pin, gpio.LOW)
+            self.logger.log("Stop " + self.name + "\n")
 
-    def start_stop(self, seconds: int):
-        gpio.output(self.pin, gpio.HIGH)
-        self.log.write(str(datetime.datetime.now()) + " start " + self.name + "\n")
-        time.sleep(seconds)
-        gpio.output(self.pin, gpio.LOW)
-        self.log.write(str(datetime.datetime.now()) + " stop " + self.name + "\n")
+    def start_and_stop(self, seconds: int):
+        if self.is_on is False:
+            gpio.output(self.pin, gpio.HIGH)
+            self.logger.log("Start " + self.name + "\n")
+
+            time.sleep(seconds)
+
+            gpio.output(self.pin, gpio.LOW)
+            self.logger.log("Stop " + self.name + "\n")
 
     def clean(self):
         gpio.cleanup(self.pin)   

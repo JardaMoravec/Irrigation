@@ -2,7 +2,7 @@ import datetime
 from classes.IRSwitch import IRSwitch
 
 
-class IRPlaner:
+class IRPlanner:
     def __init__(self):
         self.run_list = []
         self.load_settings()

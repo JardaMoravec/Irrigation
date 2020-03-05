@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 
 import time
-import datetime
 import RPi.GPIO as gpio
 from pad4pi import rpi_gpio
-from classes.IRSwitch import IRSwitch
 from classes.IREngine import IREngine
+from classes.IRLogger import IRLogger
 
 gpio.setmode(gpio.BCM)
 gpio.setwarnings(False)
@@ -27,70 +26,33 @@ run = False
 run_section = None
 run_filters = False
 
-engine = IREngine()
+logger = IRLogger("./data/irrigation.log")
 
-def keyPressed(key):
-    global run, run_section, run_filters
+engine = IREngine(logger)
+
+
+def key_pressed(key):
+    global engine, run, run_section, run_filters
     
     if run_filters is False:
         if key == 1 or key == 2 or key == 3 or key == 4:
-            # zapnou privod        
-            if run is False:                                
-                start()
-                run = True
-            # vypnout bezici
-            if run_section is not None:
-                print("Sekce " + str(run_section.name) + ' stop')
-                run_section.stop()
-                run_section.clean() 
-                run_section = None    
-            
-            # spustit novy
-            print("Sekce " + str(key) + ' start')
-            run_section = IR_Switch("Sekce " + str(key), pins[key], log_file)
-            run_section.start()
+            # turn on
+            engine.turn_on_switch(key)
 
-        elif key == '#': # vypnout
-            if run is True and run_section is not None:
-                print("Sekce " + str(run_section.name) + ' stop')
-                run_section.stop()
-                run_section.clean()
-                run_section = None      
-                
-                time.sleep(2)
-                # vycistit filtry
-                run_filters = True
-                clean_filters()
-                run_filters = False
-                #vypnout
-                stop()
-                run = False
+        elif key == '#':
+            # turn off
+            engine.turn_off()
 
-        elif key == '*': # procistit filtry
-            # zapnou privod            
-            if run is False:                                
-                start()
-                run = True
+        elif key == '*':
+            # clean filters
+            engine.clean_filters()
+            engine.turn_off()
 
-            # vypnout bezici
-            if run_section is not None:
-                print("Sekce " + str(run_section.name) + ' stop')
-                run_section.stop()
-                run_section.clean()  
-                run_section = None
-        
-            # vycistit filtry
-            run_filters = True
-            clean_filters()
-            run_filters = False
-            #vypnout
-            stop()
-            run = False
         else:
-            print("Žádná funkce")
+            logger.log("Žádná funkce")
             
 
-keypad.registerKeyPressHandler(keyPressed)
+keypad.registerKeyPressHandler(key_pressed)
 
 try:
     while True:
@@ -98,4 +60,3 @@ try:
 except (KeyboardInterrupt, SystemExit, Exception):
     keypad.cleanup()
     gpio.cleanup() 
-
