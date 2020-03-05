@@ -4,21 +4,21 @@ import time
 import datetime
 import RPi.GPIO as gpio
 from pad4pi import rpi_gpio
-from classes.IR_Switch import IR_Switch
-from classes.func import start, stop, pins, log_file, clean_filters
+from classes.IRSwitch import IRSwitch
+from classes.IREngine import IREngine
 
 gpio.setmode(gpio.BCM)
 gpio.setwarnings(False)
 
 KEYPAD = [
-        [1,2,3],
-        [4,5,6],
-        [7,8,9],
-        ["*",0,"#"]
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+    ["*", 0, "#"]
 ]
 
-ROW_PINS = [25,5,6,13] # BCM numbering
-COL_PINS = [19,26,20] # BCM numbering
+ROW_PINS = [25, 5, 6, 13]   # BCM numbering
+COL_PINS = [19, 26, 20]   # BCM numbering
 
 factory = rpi_gpio.KeypadFactory()
 keypad = factory.create_keypad(keypad=KEYPAD, row_pins=ROW_PINS, col_pins=COL_PINS)
@@ -26,6 +26,8 @@ keypad = factory.create_keypad(keypad=KEYPAD, row_pins=ROW_PINS, col_pins=COL_PI
 run = False
 run_section = None
 run_filters = False
+
+engine = IREngine()
 
 def keyPressed(key):
     global run, run_section, run_filters
@@ -87,14 +89,13 @@ def keyPressed(key):
         else:
             print("Žádná funkce")
             
-            
 
 keypad.registerKeyPressHandler(keyPressed)
 
 try:
-    while(True):
+    while True:
         time.sleep(0.2)
-except (KeyboardInterrupt,SystemExit, Exception):
+except (KeyboardInterrupt, SystemExit, Exception):
     keypad.cleanup()
     gpio.cleanup() 
 
