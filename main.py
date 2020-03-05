@@ -23,7 +23,7 @@ COL_PINS = [19, 26, 20]   # BCM numbering
 factory = rpi_gpio.KeypadFactory()
 keypad = factory.create_keypad(keypad=KEYPAD, row_pins=ROW_PINS, col_pins=COL_PINS)
 
-logger = IRLogger("./data/irrigation.log", True)
+logger = IRLogger("/home/pi/irrigation/data/irrigation.log", True)
 
 engine = IREngine(logger)
 planner = IRPlanner(engine)
@@ -55,5 +55,6 @@ try:
     while True:
         time.sleep(0.2)
 except (KeyboardInterrupt, SystemExit, Exception):
+    logger.close()
     keypad.cleanup()
     gpio.cleanup() 

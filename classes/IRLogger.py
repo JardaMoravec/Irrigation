@@ -18,3 +18,7 @@ class IRLogger:
 
         if self.std_output is True:
             print(message)
+
+    def close(self):
+        if self.file is not None:
+            self.file.close()
