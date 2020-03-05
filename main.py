@@ -4,8 +4,8 @@ import time
 import datetime
 import RPi.GPIO as gpio
 from pad4pi import rpi_gpio
-from IR_Switch import IR_Switch
-from func import start, stop, pins, log_file, clean_filters
+from classes.IR_Switch import IR_Switch
+from classes.func import start, stop, pins, log_file, clean_filters
 
 gpio.setmode(gpio.BCM)
 gpio.setwarnings(False)
