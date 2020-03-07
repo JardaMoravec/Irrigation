@@ -21,9 +21,9 @@ class IREngine:
             elif key == 't':
                 title = 'Trafo'
             elif key == 'f1':
-                title = 'Filtr 1'
+                title = 'Čištění Filtru 1'
             elif key == 'f2':
-                title = 'Filtr 2'
+                title = 'Čištění Filtru 2'
             else:
                 title = "Sekce " + str(key)
             self.switches[key] = IRSwitch(title, pin, self.logger)
@@ -61,7 +61,6 @@ class IREngine:
                 self.switches[i].stop()
 
         # turn on first switch and stop
-        self.logger.log("Clean filter 1")
         self.switches['f1'].start()
         time.sleep(self.filter_runtime)
         self.switches['f1'].stop()
@@ -69,7 +68,6 @@ class IREngine:
         time.sleep(5)
 
         # turn on second switch and stop
-        self.logger.log("Clean filter 2")
         self.switches['f2'].start()
         time.sleep(self.filter_runtime)
         self.switches['f2'].stop()
@@ -99,7 +97,7 @@ class IREngine:
         except KeyError:
             self.logger.log("Spínač [{}] není definovaný".format(key))
 
-    def turn_off(self):
+    def turn_off(self, clean_filters: bool):
         # if main is off, do nothing
         if self.main_switch_is_on() is False:
             return
@@ -111,7 +109,8 @@ class IREngine:
         time.sleep(2)
 
         # clean filters
-        self.clean_filters()
+        if clean_filters is True:
+            self.clean_filters()
 
         # turn off main switch
         self.stop()

@@ -37,10 +37,14 @@ def key_pressed(key):
         engine.turn_on_switch(key)
 
     elif key == '#':
-        # turn off
-        engine.turn_off()
+        # turn off with cleaning
+        engine.turn_off(True)
 
     elif key == '*':
+        # turn off without cleaning
+        engine.turn_off(False)
+
+    elif key == 0:
         # clean filters
         engine.clean_filters()
         engine.turn_off()
@@ -53,12 +57,14 @@ keypad.registerKeyPressHandler(key_pressed)
 
 try:
     while True:
-        actual = planner.is_it_time()
-        planner.turn_on(actual)
-
+        try:
+            actual = planner.is_it_time()
+            planner.turn_on(actual)
+        except Exception as e:
+            logger.log(str(e))
         time.sleep(59)
 
-except (KeyboardInterrupt, SystemExit, Exception):
+except (KeyboardInterrupt, SystemExit):
     logger.close()
     keypad.cleanup()
-    gpio.cleanup() 
+    gpio.cleanup()

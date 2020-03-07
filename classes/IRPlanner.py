@@ -48,7 +48,7 @@ class IRPlanner:
 
         # turn on sections
         for key in list(range(1, 5)):
-            self.engine.start_and_stop_switch(key, int(self.run_list[key]))
+            self.engine.start_and_stop_switch(key, int(active[key]))
 
         # clean filters
         self.engine.clean_filters()
