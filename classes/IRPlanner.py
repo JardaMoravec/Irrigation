@@ -1,5 +1,4 @@
 import datetime
-from classes.IRSwitch import IRSwitch
 from classes.IREngine import IREngine
 
 
@@ -28,7 +27,7 @@ class IRPlanner:
                     }
                     self.run_list.append(item)
 
-                except ValueError as e:
+                except ValueError:
                     self.engine.logger.log("Špatný konfigurák.")
         f.close()
 
@@ -39,3 +38,20 @@ class IRPlanner:
             if t == item['time']:
                 return item
         return False
+
+    def turn_on(self, active: list):
+        if active is False:
+            return
+
+        # turn on main switch
+        self.engine.start()
+
+        # turn on sections
+        for key in list(range(1, 5)):
+            self.engine.start_and_stop_switch(key, int(self.run_list[key]))
+
+        # clean filters
+        self.engine.clean_filters()
+
+        # turn off main switch
+        self.engine.stop()

@@ -53,7 +53,11 @@ keypad.registerKeyPressHandler(key_pressed)
 
 try:
     while True:
-        time.sleep(0.2)
+        actual = planner.is_it_time()
+        planner.turn_on(actual)
+
+        time.sleep(59)
+
 except (KeyboardInterrupt, SystemExit, Exception):
     logger.close()
     keypad.cleanup()

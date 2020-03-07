@@ -29,27 +29,36 @@ class IREngine:
             self.switches[key] = IRSwitch(title, pin, self.logger)
 
     def start(self):
-        # turn on transformer
-        self.switches['t'].start()
+        if self.main_switch_is_on() is False:
+            # turn on transformer
+            self.switches['t'].start()
 
-        time.sleep(1)
+            time.sleep(1)
 
-        # turn on main switch
-        self.switches['m'].start()
+            # turn on main switch
+            self.switches['m'].start()
 
     def stop(self):
-        # turn off main switch
-        self.switches['m'].stop()
+        if self.main_switch_is_on() is True:
+            # turn off main switch
+            self.switches['m'].stop()
 
-        time.sleep(1)
+            time.sleep(1)
 
-        # turn off transformer
-        self.switches['t'].stop()
+            # turn off transformer
+            self.switches['t'].stop()
 
     def clean_filters(self):
+        if self.filters_is_on() is True:
+            return
+
         # main is on?
         if self.main_switch_is_on() is False:
             self.start()
+        else:
+            # turn all switches
+            for i in range(1, 5):
+                self.switches[i].stop()
 
         # turn on first switch and stop
         self.logger.log("Clean filter 1")
@@ -106,6 +115,24 @@ class IREngine:
 
         # turn off main switch
         self.stop()
+
+    def start_and_stop_switch(self, key, seconds: int):
+        # main is on?
+        if self.main_switch_is_on() is False:
+            self.start()
+
+        try:
+            # turn off all other switches and filters
+            self.switches['f1'].stop()
+            self.switches['f2'].stop()
+            for i in range(1, 5):
+                if key != i:
+                    self.switches[i].stop()
+            # turn on actual switch
+            if self.switches[key].is_on is False:
+                self.switches[key].start_and_stop(seconds)
+        except KeyError:
+            self.logger.log("Spínač [{}] není definovaný".format(key))
 
     def is_on(self):
         return self.filters_is_on() or self.main_switch_is_on() or self.switches_is_on()
