@@ -47,7 +47,7 @@ def key_pressed(key):
     elif key == 0:
         # clean filters
         engine.clean_filters()
-        engine.turn_off()
+        engine.turn_off(False)
 
     else:
         logger.log("Žádná funkce")

@@ -18,15 +18,20 @@ class IREngine:
         for key, pin in self.pins.items():
             if key == 'm':
                 title = 'Hlavní ventil'
+                revers_mode = False
             elif key == 't':
                 title = 'Trafo'
+                revers_mode = True
             elif key == 'f1':
                 title = 'Čištění Filtru 1'
+                revers_mode = False
             elif key == 'f2':
                 title = 'Čištění Filtru 2'
+                revers_mode = False
             else:
                 title = "Sekce " + str(key)
-            self.switches[key] = IRSwitch(title, pin, self.logger)
+                revers_mode = False
+            self.switches[key] = IRSwitch(title, pin, self.logger, revers_mode)
 
     def start(self):
         if self.main_switch_is_on() is False:
